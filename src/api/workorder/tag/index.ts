@@ -34,6 +34,11 @@ export const WorkorderTagApi = {
   // 根据一级标签获取二级标签
   getTagListByParent: async (parentTagId: number) => {
     return await request.get({ url: `/workorder/tag/list-by-parent?parentTagId=` + parentTagId })
+  },
+  // 根据多个一级标签获取二级标签
+  getTagListByParents: async (parentTagIds: number[]) => {
+    const ids = parentTagIds.join(',')
+    return await request.get({ url: `/workorder/tag/list-by-parents?parentTagIds=` + ids })
   }
 }
 

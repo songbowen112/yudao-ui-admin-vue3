@@ -33,6 +33,10 @@ export const ConfirmOrderApi = {
   },
   export: async (params: any) => {
     return await request.download({ url: `/workorder/confirm-order/export-excel`, params })
+  },
+  // 下载文件
+  download: async (id: number) => {
+    return await request.download({ url: `/workorder/confirm-order/download?id=` + id })
   }
 }
 

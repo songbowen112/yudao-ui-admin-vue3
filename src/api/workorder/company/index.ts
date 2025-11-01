@@ -35,6 +35,10 @@ export const WorkorderCompanyApi = {
   },
   export: async (params: any) => {
     return await request.download({ url: `/workorder/company/export-excel`, params })
+  },
+  // 获得企业列表
+  getList: async (params?: any) => {
+    return await request.get({ url: `/workorder/company/list`, params })
   }
 }
 
