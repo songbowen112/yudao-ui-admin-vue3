@@ -16,6 +16,7 @@ export interface QuotedPriceOrderVO {
   finalPayment?: number
   discountPrice?: number
   status?: number
+  tagIds?: string
   fileType?: number
   fileUrl?: string
   remark?: string
@@ -40,6 +41,10 @@ export const QuotedPriceOrderApi = {
   },
   export: async (params: any) => {
     return await request.download({ url: `/workorder/quoted-price-order/export-excel`, params })
+  },
+  // 下载文件
+  download: async (id: number) => {
+    return await request.download({ url: `/workorder/quoted-price-order/download?id=` + id })
   }
 }
 

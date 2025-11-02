@@ -8,7 +8,7 @@
       label-width="100px"
     >
       <el-form-item label="工单名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入工单名称" />
+        <el-input v-model="formData.name" placeholder="请输入工单名称" :disabled="formType === 'update'" />
       </el-form-item>
       <el-form-item label="收款企业" prop="receiptCompanyId">
         <el-select

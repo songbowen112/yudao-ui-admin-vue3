@@ -37,7 +37,9 @@ export const ConfirmOrderApi = {
   // 下载文件
   download: async (id: number) => {
     return await request.download({ url: `/workorder/confirm-order/download?id=` + id })
+  },
+  // 获取初始化状态的确认单列表
+  listInitStatus: async () => {
+    return await request.get({ url: `/workorder/confirm-order/list-init` })
   }
 }
-
-
