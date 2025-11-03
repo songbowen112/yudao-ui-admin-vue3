@@ -72,16 +72,8 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['workorder:tag:create']"
+          v-hasPermi="['tag:create']"
           ><Icon icon="ep:plus" class="mr-5px" /> 新增</el-button
-        >
-        <el-button
-          type="success"
-          plain
-          @click="handleExport"
-          :loading="exportLoading"
-          v-hasPermi="['workorder:tag:export']"
-          ><Icon icon="ep:download" class="mr-5px" /> 导出</el-button
         >
       </el-form-item>
     </el-form>
@@ -106,8 +98,8 @@
         label="创建时间"
         align="center"
         prop="createTime"
-        width="180px"
-        :formatter="dateFormatter"
+        width="120px"
+        :formatter="dateFormatter2"
       />
       <el-table-column label="操作" align="center" min-width="120px">
         <template #default="scope">
@@ -115,14 +107,14 @@
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
-            v-hasPermi="['workorder:tag:update']"
+            v-hasPermi="['tag:update']"
             >编辑</el-button
           >
           <el-button
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['workorder:tag:delete']"
+            v-hasPermi="['tag:delete']"
             >删除</el-button
           >
         </template>
@@ -142,7 +134,7 @@
 
 <script setup lang="ts">
 import download from '@/utils/download'
-import { dateFormatter } from '@/utils/formatTime'
+import { dateFormatter2 } from '@/utils/formatTime'
 import { WorkorderTagApi, type WorkorderTagVO } from '@/api/workorder/tag'
 import TagForm from './TagForm.vue'
 

@@ -10,31 +10,14 @@
       <el-form-item label="工单名称" prop="name">
         <el-input v-model="formData.name" placeholder="请输入工单名称" :disabled="formType === 'update'" />
       </el-form-item>
-      <el-form-item label="收款企业" prop="receiptCompanyId">
+      <el-form-item label="标的企业" prop="contractCompanyId">
         <el-select
-          v-model="formData.receiptCompanyId"
-          placeholder="请选择收款企业"
+          v-model="formData.contractCompanyId"
+          placeholder="请选择标的企业"
           clearable
           filterable
           class="w-full"
-          @change="handleReceiptCompanyChange"
-        >
-          <el-option
-            v-for="item in companyList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id!"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="付款企业" prop="paymentCompanyId">
-        <el-select
-          v-model="formData.paymentCompanyId"
-          placeholder="请选择付款企业"
-          clearable
-          filterable
-          class="w-full"
-          @change="handlePaymentCompanyChange"
+          @change="handleContractCompanyChange"
         >
           <el-option
             v-for="item in companyList"
@@ -118,17 +101,16 @@ const formType = ref('') // 表单的类型：create - 新增；update - 修改
 const formData = ref({
   id: undefined,
   name: '',
-  receiptCompanyId: undefined as number | undefined,
-  receiptCompanyName: '',
-  paymentCompanyId: undefined as number | undefined,
-  paymentCompanyName: '',
+  contractCompanyId: undefined as number | undefined,
+  contractCompanyName: '',
   parentTagIds: [] as number[],
   tagIds: [] as number[],
   fileType: 1,
   remark: ''
 })
 const formRules = reactive({
-  name: [{ required: true, message: '工单名称不能为空', trigger: 'blur' }]
+  name: [{ required: true, message: '工单名称不能为空', trigger: 'blur' }],
+  contractCompanyId: [{ required: true, message: '标的企业不能为空', trigger: 'change' }]
 })
 const formRef = ref() // 表单 Ref
 
@@ -166,23 +148,13 @@ const handleParentTagChange = async (parentTagIds: number[] | undefined) => {
   }
 }
 
-/** 收款企业改变时，更新企业名称 */
-const handleReceiptCompanyChange = (companyId: number | undefined) => {
+/** 标的企业改变时，更新企业名称 */
+const handleContractCompanyChange = (companyId: number | undefined) => {
   if (companyId) {
     const company = companyList.value.find((item) => item.id === companyId)
-    formData.value.receiptCompanyName = company?.name || ''
+    formData.value.contractCompanyName = company?.name || ''
   } else {
-    formData.value.receiptCompanyName = ''
-  }
-}
-
-/** 付款企业改变时，更新企业名称 */
-const handlePaymentCompanyChange = (companyId: number | undefined) => {
-  if (companyId) {
-    const company = companyList.value.find((item) => item.id === companyId)
-    formData.value.paymentCompanyName = company?.name || ''
-  } else {
-    formData.value.paymentCompanyName = ''
+    formData.value.contractCompanyName = ''
   }
 }
 
@@ -202,10 +174,8 @@ const open = async (type: string, id?: number) => {
       formData.value = {
         id: data.id,
         name: data.name || '',
-        receiptCompanyId: data.receiptCompanyId,
-        receiptCompanyName: data.receiptCompanyName || '',
-        paymentCompanyId: data.paymentCompanyId,
-        paymentCompanyName: data.paymentCompanyName || '',
+        contractCompanyId: data.contractCompanyId,
+        contractCompanyName: data.contractCompanyName || '',
         tagIds: data.tagIds ? data.tagIds.split(',').map(Number).filter((id) => id > 0) : [],
         fileType: data.fileType ?? 1,
         remark: data.remark || ''
@@ -262,25 +232,17 @@ const submitForm = async () => {
     const data: ConfirmOrderVO = {
       id: formData.value.id,
       name: formData.value.name,
-      receiptCompanyId: formData.value.receiptCompanyId,
-      receiptCompanyName: formData.value.receiptCompanyName,
-      paymentCompanyId: formData.value.paymentCompanyId,
-      paymentCompanyName: formData.value.paymentCompanyName,
+      contractCompanyId: formData.value.contractCompanyId,
+      contractCompanyName: formData.value.contractCompanyName,
       tagIds: tagIdsString,
       fileType: formData.value.fileType,
       remark: formData.value.remark
     }
     // 确保企业名称已设置
-    if (data.receiptCompanyId && !data.receiptCompanyName) {
-      const company = companyList.value.find((item) => item.id === data.receiptCompanyId)
+    if (data.contractCompanyId && !data.contractCompanyName) {
+      const company = companyList.value.find((item) => item.id === data.contractCompanyId)
       if (company) {
-        data.receiptCompanyName = company.name || ''
-      }
-    }
-    if (data.paymentCompanyId && !data.paymentCompanyName) {
-      const company = companyList.value.find((item) => item.id === data.paymentCompanyId)
-      if (company) {
-        data.paymentCompanyName = company.name || ''
+        data.contractCompanyName = company.name || ''
       }
     }
     if (formType.value === 'create') {
@@ -303,10 +265,8 @@ const resetForm = () => {
   formData.value = {
     id: undefined,
     name: '',
-    receiptCompanyId: undefined,
-    receiptCompanyName: '',
-    paymentCompanyId: undefined,
-    paymentCompanyName: '',
+    contractCompanyId: undefined,
+    contractCompanyName: '',
     parentTagIds: [],
     tagIds: [],
     fileType: 1,

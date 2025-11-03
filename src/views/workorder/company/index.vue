@@ -16,8 +16,7 @@
       <el-form-item>
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
-        <el-button type="primary" plain @click="openForm('create')" v-hasPermi="['workorder:company:create']"><Icon icon="ep:plus" class="mr-5px" /> 新增</el-button>
-        <el-button type="success" plain @click="handleExport" :loading="exportLoading" v-hasPermi="['workorder:company:export']"><Icon icon="ep:download" class="mr-5px" /> 导出</el-button>
+        <el-button type="primary" plain @click="openForm('create')" v-hasPermi="['company:create']"><Icon icon="ep:plus" class="mr-5px" /> 新增</el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -25,9 +24,7 @@
   <ContentWrap>
     <el-table row-key="id" v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="企业ID" align="center" prop="id" />
       <el-table-column label="企业名称" align="center" prop="name" />
-      <el-table-column label="简称" align="center" prop="shortName" />
       <el-table-column label="营业执照号" align="center" prop="licenseNo" />
       <el-table-column label="法定代表人" align="center" prop="legalPerson" />
       <el-table-column label="电话" align="center" prop="tel" />
@@ -37,22 +34,30 @@
       <el-table-column label="状态" align="center" prop="status">
         <template #default="scope">{{ scope.row.status === 1 ? '启用' : '禁用' }}</template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180px" :formatter="dateFormatter" />
+      <el-table-column label="创建时间" align="center" prop="createTime" width="120px">
+        <template #default="scope">
+          {{ scope.row.createTime ? dateFormatter2(null, null, scope.row.createTime) : '-' }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" min-width="120px">
         <template #default="scope">
-          <el-button link type="primary" @click="openForm('update', scope.row.id)" v-hasPermi="['workorder:company:update']">编辑</el-button>
-          <el-button link type="danger" @click="handleDelete(scope.row.id)" v-hasPermi="['workorder:company:delete']">删除</el-button>
+          <el-button link type="primary" @click="openForm('update', scope.row.id)" v-hasPermi="['company:update']">编辑</el-button>
+          <el-button link type="danger" @click="handleDelete(scope.row.id)" v-hasPermi="['company:delete']">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <Pagination :total="total" v-model:page="queryParams.pageNo" v-model:limit="queryParams.pageSize" @pagination="getList" />
   </ContentWrap>
+
+  <!-- 表单弹窗 -->
+  <CompanyForm ref="formRef" @success="getList" />
 </template>
 
 <script setup lang="ts">
 import download from '@/utils/download'
-import { dateFormatter } from '@/utils/formatTime'
+import { dateFormatter2 } from '@/utils/formatTime'
 import { WorkorderCompanyApi, type WorkorderCompanyVO } from '@/api/workorder/company'
+import CompanyForm from './CompanyForm.vue'
 
 defineOptions({ name: 'WorkorderCompany' })
 
@@ -71,6 +76,7 @@ const queryParams = reactive({
 })
 const queryFormRef = ref()
 const exportLoading = ref(false)
+const formRef = ref<InstanceType<typeof CompanyForm>>() // 表单 Ref
 
 const getList = async () => {
   loading.value = true
@@ -93,7 +99,9 @@ const resetQuery = () => {
   handleQuery()
 }
 
-const openForm = (type: string, id?: number) => {}
+const openForm = (type: string, id?: number) => {
+  formRef.value?.open(type, id)
+}
 
 const handleDelete = async (id: number) => {
   try {

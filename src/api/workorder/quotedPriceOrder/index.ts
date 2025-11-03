@@ -45,7 +45,9 @@ export const QuotedPriceOrderApi = {
   // 下载文件
   download: async (id: number) => {
     return await request.download({ url: `/workorder/quoted-price-order/download?id=` + id })
+  },
+  // 获取月度统计数据
+  getMonthlyStatistics: async (params?: { beginTime?: string; endTime?: string }) => {
+    return await request.get({ url: `/workorder/quoted-price-order/statistics/monthly`, params })
   }
 }
-
-

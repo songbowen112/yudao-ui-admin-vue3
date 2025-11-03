@@ -4,9 +4,14 @@
       <el-form-item label="工单名称" prop="name">
         <el-input v-model="queryParams.name" placeholder="请输入工单名称" clearable @keyup.enter="handleQuery" class="!w-240px" />
       </el-form-item>
-      <el-form-item label="工单状态" prop="status">
-        <el-select v-model="queryParams.status" placeholder="请选择工单状态" clearable class="!w-240px">
-          <el-option v-for="item in statusOptions" :key="item.value" :label="item.label" :value="item.value" />
+      <el-form-item label="付款企业" prop="paymentCompanyId">
+        <el-select v-model="queryParams.paymentCompanyId" placeholder="请选择付款企业" clearable filterable class="!w-240px">
+          <el-option
+            v-for="item in companyList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id!"
+          />
         </el-select>
       </el-form-item>
       <el-form-item label="创建时间" prop="createTime">
@@ -16,7 +21,6 @@
         <el-button @click="handleQuery"><Icon icon="ep:search" class="mr-5px" /> 搜索</el-button>
         <el-button @click="resetQuery"><Icon icon="ep:refresh" class="mr-5px" /> 重置</el-button>
         <el-button type="primary" plain @click="openForm('create')" v-hasPermi="['workorder:quoted-price-order:create']"><Icon icon="ep:plus" class="mr-5px" /> 新增</el-button>
-        <el-button type="success" plain @click="handleExport" :loading="exportLoading" v-hasPermi="['workorder:quoted-price-order:export']"><Icon icon="ep:download" class="mr-5px" /> 导出</el-button>
       </el-form-item>
     </el-form>
   </ContentWrap>
@@ -24,9 +28,7 @@
   <ContentWrap>
     <el-table row-key="id" v-loading="loading" :data="list" :stripe="true" :show-overflow-tooltip="true">
       <el-table-column type="selection" width="55" />
-      <el-table-column label="工单ID" align="center" prop="id" />
       <el-table-column label="工单名称" align="center" prop="name" />
-      <el-table-column label="确认单" align="center" prop="confirmOrderName" />
       <el-table-column label="收款企业" align="center" prop="receiptCompanyName" />
       <el-table-column label="付款企业" align="center" prop="paymentCompanyName" />
       <el-table-column label="单价" align="center" prop="price" />
@@ -34,15 +36,14 @@
       <el-table-column label="总价" align="center" prop="totalPrice" />
       <el-table-column label="预付款" align="center" prop="advancePayment" />
       <el-table-column label="尾款" align="center" prop="finalPayment" />
-      <el-table-column label="状态" align="center" prop="status">
-        <template #default="scope">{{ statusMap[scope.row.status] ?? scope.row.status }}</template>
-      </el-table-column>
       <el-table-column label="文件类型" align="center" prop="fileType">
         <template #default="scope">{{ getFileTypeName(scope.row.fileType) }}</template>
       </el-table-column>
-      <el-table-column label="文件路径" align="center" prop="fileUrl" min-width="200" :show-overflow-tooltip="true" />
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="创建时间" align="center" prop="createTime" width="180px" :formatter="dateFormatter" />
+      <el-table-column label="创建时间" align="center" prop="createTime" width="120px">
+        <template #default="scope">
+          {{ scope.row.createTime ? dateFormatter2(null, null, scope.row.createTime) : '-' }}
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" min-width="240px">
         <template #default="scope">
           <el-button link type="primary" @click="openForm('update', scope.row.id)" v-hasPermi="['workorder:quoted-price-order:update']">编辑</el-button>
@@ -80,8 +81,9 @@
 
 <script setup lang="ts">
 import download from '@/utils/download'
-import { dateFormatter } from '@/utils/formatTime'
+import { dateFormatter2 } from '@/utils/formatTime'
 import { QuotedPriceOrderApi, type QuotedPriceOrderVO } from '@/api/workorder/quotedPriceOrder'
+import { WorkorderCompanyApi, type WorkorderCompanyVO } from '@/api/workorder/company'
 import QuotedPriceOrderForm from './QuotedPriceOrderForm.vue'
 
 defineOptions({ name: 'QuotedPriceOrder' })
@@ -89,12 +91,15 @@ defineOptions({ name: 'QuotedPriceOrder' })
 const message = useMessage()
 const { t } = useI18n()
 
-const statusOptions = [
-  { label: '初始化', value: 1 },
-  { label: '通知完成', value: 2 },
-  { label: '通知失败', value: 3 }
-]
-const statusMap: Record<number, string> = Object.fromEntries(statusOptions.map((i) => [i.value, i.label]))
+const companyList = ref<WorkorderCompanyVO[]>([]) // 企业列表
+
+/** 获取企业列表 */
+const getCompanyList = async () => {
+  try {
+    const data = await WorkorderCompanyApi.getList({ status: 1 })
+    companyList.value = data
+  } catch {}
+}
 
 const loading = ref(true)
 const list = ref<QuotedPriceOrderVO[]>([])
@@ -293,6 +298,7 @@ const handleDownloadFromPreview = () => {
 }
 
 onMounted(() => {
+  getCompanyList()
   getList()
 })
 </script>

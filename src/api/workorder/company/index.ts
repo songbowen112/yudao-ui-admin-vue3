@@ -39,6 +39,10 @@ export const WorkorderCompanyApi = {
   // 获得企业列表
   getList: async (params?: any) => {
     return await request.get({ url: `/workorder/company/list`, params })
+  },
+  // 根据是否属于自己的查询企业列表中的第一个
+  getByIsOwn: async (isOwn: number) => {
+    return await request.get({ url: `/workorder/company/get-by-is-own?isOwn=` + isOwn })
   }
 }
 

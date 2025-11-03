@@ -3,10 +3,8 @@ import request from '@/config/axios'
 export interface ConfirmOrderVO {
   id?: number
   name?: string
-  receiptCompanyId?: number
-  receiptCompanyName?: string
-  paymentCompanyId?: number
-  paymentCompanyName?: string
+  contractCompanyId?: number
+  contractCompanyName?: string
   tagIds?: string
   status?: number
   fileType?: number
