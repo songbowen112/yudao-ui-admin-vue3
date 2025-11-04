@@ -72,7 +72,7 @@
           type="primary"
           plain
           @click="openForm('create')"
-          v-hasPermi="['tag:create']"
+          v-hasPermi="['workorder:tag:create']"
           ><Icon icon="ep:plus" class="mr-5px" /> 新增</el-button
         >
       </el-form-item>
@@ -107,14 +107,14 @@
             link
             type="primary"
             @click="openForm('update', scope.row.id)"
-            v-hasPermi="['tag:update']"
+            v-hasPermi="['workorder:tag:update']"
             >编辑</el-button
           >
           <el-button
             link
             type="danger"
             @click="handleDelete(scope.row.id)"
-            v-hasPermi="['tag:delete']"
+            v-hasPermi="['workorder:tag:delete']"
             >删除</el-button
           >
         </template>
